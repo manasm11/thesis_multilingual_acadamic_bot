@@ -1,0 +1,33 @@
+#!/bin/bash
+
+PYTHON="venv/bin/python"
+ACTIVATE="venv/bin/activate"
+PWD=$(pwd)
+
+install() {
+  python3.8 -m venv venv && source $ACTIVATE && pip install -r requirements.txt
+}
+
+api() {
+  $PYTHON -m uvicorn api:app --port 8080 --host 0.0.0.0 --reload
+}
+
+ui() {
+  cd ui && python3 -m http.server 8000
+}
+
+bot() {
+  $PYTHON -m uvicorn bot:app --port 5005 --host 0.0.0.0 --reload
+}
+
+start() {
+  bot &
+  api &
+  ui
+}
+
+clean() {
+  cd ${PWD} && rm -rf venv
+}
+
+$@
